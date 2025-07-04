@@ -22,13 +22,6 @@
         .next-prayer-card {
             background: linear-gradient(135deg, #10B981, #059669);
         }
-        .mosque-img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-        }
         select {
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -38,56 +31,49 @@
             background-position: right 0.75rem center;
             background-size: 1.25em;
         }
-        /* Suggestions Box */
+        .notification-bell.active {
+            color: #34D399; /* emerald-400 */
+        }
+        .view-toggle button.active {
+            background-color: #059669; /* emerald-600 */
+            color: white;
+        }
+        #monthly-view-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
         #suggestions-box {
             max-height: 150px;
             overflow-y: auto;
         }
-        #suggestions-box::-webkit-scrollbar {
-            width: 5px;
-        }
-        #suggestions-box::-webkit-scrollbar-track {
-            background: #2d3748; /* bg-gray-800 */
-        }
-        #suggestions-box::-webkit-scrollbar-thumb {
-            background: #4a5568; /* bg-gray-600 */
-            border-radius: 10px;
-        }
     </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9042557168555887"
-     crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
 
     <div id="app-container" class="w-full max-w-lg mx-auto">
         
-        <!-- Loading State -->
         <div id="loader" class="text-center">
             <svg class="animate-spin h-8 w-8 text-white mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <p class="text-lg">Fetching your location and prayer times...</p>
-            <p class="text-sm text-gray-400">Please allow location access for accurate results.</p>
+            <p class="text-lg">Fetching prayer times...</p>
         </div>
 
-        <!-- Error Message -->
         <div id="error-message" class="hidden text-center card p-6 rounded-2xl">
             <h2 class="text-xl font-bold text-red-400 mb-2">Error</h2>
             <p id="error-text" class="text-gray-300"></p>
-            <button onclick="getUserLocation()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
-                Try Again
-            </button>
+            <button onclick="getUserLocation()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Try Again</button>
         </div>
 
-        <!-- Main Content -->
         <div id="main-content" class="hidden">
             <div class="text-center mb-4">
                 <h1 id="date" class="text-2xl font-bold"></h1>
+                <p id="hijri-date" class="text-md text-gray-400"></p>
                 <p id="location" class="text-gray-400"></p>
             </div>
 
-            <!-- Settings -->
+            <!-- Settings Card -->
             <div class="card p-4 rounded-2xl mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Location Input with Autosuggest -->
@@ -99,9 +85,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
                             </button>
                         </div>
-                        <div id="suggestions-box" class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg hidden">
-                            <!-- Suggestions will be injected here -->
-                        </div>
+                        <div id="suggestions-box" class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg hidden"></div>
                     </div>
                     <!-- Calculation Method -->
                     <div>
@@ -120,128 +104,151 @@
                  <button onclick="getUserLocation()" class="mt-3 text-sm text-emerald-400 hover:text-emerald-300 w-full text-center">Use my current location</button>
             </div>
 
-            <!-- Next Prayer Countdown -->
-            <div class="next-prayer-card flex items-center justify-around p-4 rounded-2xl mb-8 shadow-lg">
-                <img src="image_15e2dc.jpg" alt="The Prophet's Mosque in Medina" class="mosque-img" onerror="this.onerror=null;this.src='https://placehold.co/120x120/000000/FFFFFF?text=Medina';">
-                <div class="text-center">
-                    <p class="text-lg font-medium text-emerald-100">Time until</p>
-                    <h2 id="next-prayer-name" class="text-4xl font-bold my-1"></h2>
-                    <div id="countdown" class="text-5xl font-bold tracking-wider">00:00:00</div>
-                </div>
-                <img src="image_15e5fe.jpg" alt="Masjid al-Haram in Mecca" class="mosque-img" onerror="this.onerror=null;this.src='https://placehold.co/120x120/000000/FFFFFF?text=Kaaba';">
+            <div class="next-prayer-card text-center p-6 rounded-2xl mb-8 shadow-lg">
+                <p class="text-lg font-medium text-emerald-100">Time until</p>
+                <h2 id="next-prayer-name" class="text-4xl font-bold my-1"></h2>
+                <div id="countdown" class="text-5xl font-bold tracking-wider">00:00:00</div>
             </div>
 
-            <!-- Prayer Times List -->
-            <div id="prayer-times-list" class="space-y-3">
-                <!-- Prayer times will be injected here -->
+            <div class="view-toggle flex justify-center mb-4 bg-gray-800 rounded-lg p-1">
+                <button id="daily-view-btn" class="px-4 py-2 text-sm font-medium rounded-md w-1/2 active">Daily</button>
+                <button id="monthly-view-btn" class="px-4 py-2 text-sm font-medium rounded-md w-1/2">Monthly</button>
+            </div>
+
+            <div id="daily-view">
+                <div id="prayer-times-list" class="space-y-3"></div>
+            </div>
+
+            <div id="monthly-view" class="hidden">
+                <div id="monthly-view-container" class="card p-2 rounded-lg">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-300 uppercase bg-gray-700/50">
+                            <tr>
+                                <th class="px-4 py-2">Date</th>
+                                <th class="px-2 py-2">Fajr</th>
+                                <th class="px-2 py-2">Dhuhr</th>
+                                <th class="px-2 py-2">Asr</th>
+                                <th class="px-2 py-2">Maghrib</th>
+                                <th class="px-2 py-2">Isha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthly-table-body"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
+    
+    <audio id="adhan-audio" src="adhan.mp3" preload="auto"></audio>
 
     <script>
         // DOM Elements
         const loader = document.getElementById('loader');
+        const mainContent = document.getElementById('main-content');
         const errorMessage = document.getElementById('error-message');
         const errorText = document.getElementById('error-text');
-        const mainContent = document.getElementById('main-content');
         const dateEl = document.getElementById('date');
+        const hijriDateEl = document.getElementById('hijri-date');
         const locationEl = document.getElementById('location');
         const nextPrayerNameEl = document.getElementById('next-prayer-name');
         const countdownEl = document.getElementById('countdown');
         const prayerTimesListEl = document.getElementById('prayer-times-list');
-        const methodSelect = document.getElementById('method-select');
+        const adhanAudio = document.getElementById('adhan-audio');
+        const dailyViewBtn = document.getElementById('daily-view-btn');
+        const monthlyViewBtn = document.getElementById('monthly-view-btn');
+        const dailyView = document.getElementById('daily-view');
+        const monthlyView = document.getElementById('monthly-view');
+        const monthlyTableBody = document.getElementById('monthly-table-body');
         const locationInput = document.getElementById('location-input');
         const suggestionsBox = document.getElementById('suggestions-box');
-
+        const methodSelect = document.getElementById('method-select');
+        
         // App State
         let countdownInterval;
         let currentLatitude, currentLongitude;
-        let currentMethod = 2; // Default to ISNA
+        let currentMethod = 2;
+        let scheduledNotifications = {};
         let debounceTimer;
 
-        // --- 1. Get User Location (Initial Load & Reset) ---
+        // --- 1. Initialization ---
         function getUserLocation() {
             showLoader();
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    position => {
-                        handleNewCoordinates(position.coords.latitude, position.coords.longitude);
-                    },
-                    handleLocationError
+                    position => handleNewCoordinates(position.coords.latitude, position.coords.longitude),
+                    () => {
+                        showError("Geolocation failed. Please search for a location manually.");
+                        // Fallback to a default location if needed, e.g., Mecca
+                        handleNewCoordinates(21.4225, 39.8262); 
+                    }
                 );
             } else {
-                showError("Geolocation is not supported by this browser.");
+                 showError("Geolocation is not supported. Please search for a location manually.");
+                 handleNewCoordinates(21.4225, 39.8262); // Fallback
             }
         }
 
-        // --- 2. Geocode City Name to Coordinates ---
-        async function searchLocation() {
-            const city = locationInput.value.trim();
-            suggestionsBox.classList.add('hidden');
-            if (!city) {
-                showError("Please enter a city name.");
-                setTimeout(() => { 
-                    if(currentLatitude) showMainContent(); 
-                    else errorMessage.classList.add('hidden');
-                }, 2000);
-                return;
-            }
-            showLoader();
-            try {
-                const geoResponse = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`);
-                if (!geoResponse.ok) throw new Error('Geocoding service failed.');
-                
-                const geoData = await geoResponse.json();
-                if (geoData.length === 0) throw new Error(`Could not find location: ${city}`);
-                
-                const { lat, lon, display_name } = geoData[0];
-                locationInput.value = display_name.split(',')[0]; // Use a cleaner name in input
-                handleNewCoordinates(parseFloat(lat), parseFloat(lon));
-
-            } catch (error) {
-                console.error("Geocoding Error:", error);
-                showError(`Could not find location for "${city}". Please try another name.`);
-            }
-        }
-        
-        // --- 3. Handle New Coordinates ---
         function handleNewCoordinates(latitude, longitude) {
             currentLatitude = latitude;
             currentLongitude = longitude;
-            fetchPrayerTimes();
+            // Reset views and fetch new data
+            monthlyTableBody.innerHTML = ''; // Clear old monthly data
+            if (dailyView.classList.contains('hidden')) {
+                fetchMonthlyData();
+            } else {
+                fetchDailyData();
+            }
             fetchLocationName();
         }
 
-        // --- 4. Fetch Prayer Times from Aladhan API ---
-        async function fetchPrayerTimes() {
-            if (!currentLatitude || !currentLongitude) return;
-            
+        // --- 2. Data Fetching ---
+        async function fetchDailyData() {
+            if (!currentLatitude) return;
+            showLoader();
             try {
-                const today = new Date();
-                const day = String(today.getDate()).padStart(2, '0');
-                const month = String(today.getMonth() + 1).padStart(2, '0');
-                const year = today.getFullYear();
-                
-                const apiURL = `https://api.aladhan.com/v1/timings/${day}-${month}-${year}?latitude=${currentLatitude}&longitude=${currentLongitude}&method=${currentMethod}`;
-
+                const apiURL = `https://api.aladhan.com/v1/timings?latitude=${currentLatitude}&longitude=${currentLongitude}&method=${currentMethod}`;
                 const response = await fetch(apiURL);
-                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
-                
+                if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 if (data.code === 200) {
                     displayPrayerTimes(data.data.timings);
                     startCountdown(data.data.timings);
-                    displayDate(data.data.date.readable);
+                    displayDate(data.data.date);
                     showMainContent();
                 } else {
-                    throw new Error(data.status || "Could not fetch prayer times.");
+                    throw new Error(data.status);
                 }
             } catch (error) {
-                showError(`Failed to fetch prayer times. ${error.message}`);
+                showError(`Failed to fetch daily prayer times. ${error.message}`);
+            }
+        }
+        
+        async function fetchMonthlyData() {
+            if (!currentLatitude) return;
+            showLoader();
+            try {
+                const today = new Date();
+                const month = today.getMonth() + 1;
+                const year = today.getFullYear();
+                const apiURL = `https://api.aladhan.com/v1/calendar/${year}/${month}?latitude=${currentLatitude}&longitude=${currentLongitude}&method=${currentMethod}`;
+                const response = await fetch(apiURL);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                if (data.code === 200) {
+                    displayMonthlyCalendar(data.data);
+                    // Also update the main date display if it's the first load
+                    if (!dateEl.textContent) {
+                         displayDate(data.data[new Date().getDate() - 1].date);
+                    }
+                    showMainContent();
+                } else {
+                    throw new Error(data.status);
+                }
+            } catch (error) {
+                showError(`Failed to fetch monthly prayer times. ${error.message}`);
             }
         }
 
-        // --- 5. Fetch Location Name ---
         async function fetchLocationName() {
             try {
                 const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${currentLatitude}&longitude=${currentLongitude}&localityLanguage=en`);
@@ -252,8 +259,169 @@
                 locationEl.textContent = `Lat: ${currentLatitude.toFixed(2)}, Lon: ${currentLongitude.toFixed(2)}`;
             }
         }
+
+        // --- 3. UI Display Functions ---
+        function displayDate(dateData) {
+            dateEl.textContent = dateData.readable;
+            hijriDateEl.textContent = `${dateData.hijri.weekday.en} ${dateData.hijri.day} ${dateData.hijri.month.en}, ${dateData.hijri.year}`;
+        }
+
+        function displayPrayerTimes(timings) {
+            prayerTimesListEl.innerHTML = '';
+            const prayerOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+            const todayStr = new Date().toDateString();
+
+            prayerOrder.forEach(prayer => {
+                const prayerTime = new Date(`${todayStr} ${timings[prayer]}`);
+                const time = formatTime(timings[prayer]);
+                const prayerEl = document.createElement('div');
+                prayerEl.className = 'card flex justify-between items-center p-4 rounded-lg';
+                
+                const bellId = `bell-${prayer}`;
+                const isScheduled = scheduledNotifications[prayer];
+
+                prayerEl.innerHTML = `
+                    <span class="text-lg font-medium">${prayer}</span>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xl font-semibold">${time}</span>
+                        <svg id="${bellId}" class="w-6 h-6 text-gray-400 hover:text-white cursor-pointer notification-bell ${isScheduled ? 'active' : ''}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                        </svg>
+                    </div>
+                `;
+                prayerTimesListEl.appendChild(prayerEl);
+
+                document.getElementById(bellId).onclick = () => handleNotificationClick(prayer, prayerTime);
+            });
+        }
         
-        // --- 6. Autosuggestion Logic ---
+        function displayMonthlyCalendar(days) {
+            monthlyTableBody.innerHTML = '';
+            days.forEach(day => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-700 hover:bg-gray-800/50';
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-medium">${day.date.readable}</td>
+                    <td class="px-2 py-3">${formatTime(day.timings.Fajr)}</td>
+                    <td class="px-2 py-3">${formatTime(day.timings.Dhuhr)}</td>
+                    <td class="px-2 py-3">${formatTime(day.timings.Asr)}</td>
+                    <td class="px-2 py-3">${formatTime(day.timings.Maghrib)}</td>
+                    <td class="px-2 py-3">${formatTime(day.timings.Isha)}</td>
+                `;
+                monthlyTableBody.appendChild(row);
+            });
+        }
+
+        // --- 4. Core Logic ---
+        function startCountdown(timings) {
+            if (countdownInterval) clearInterval(countdownInterval);
+            const prayerTimes = getPrayerDateObjects(timings);
+            const update = () => {
+                const now = new Date();
+                let nextPrayer = prayerTimes.find(p => p.time > now);
+                if (!nextPrayer) {
+                    const tomorrowFajrTime = new Date(prayerTimes[0].time);
+                    tomorrowFajrTime.setDate(tomorrowFajrTime.getDate() + 1);
+                    nextPrayer = { name: 'Fajr', time: tomorrowFajrTime };
+                }
+                updateCountdownDisplay(nextPrayer, now);
+            };
+            countdownInterval = setInterval(update, 1000);
+            update();
+        }
+
+        function getPrayerDateObjects(timings) {
+            const todayStr = new Date().toDateString();
+            const prayerOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+            return prayerOrder
+                .filter(name => timings[name])
+                .map(name => ({
+                    name: name,
+                    time: new Date(`${todayStr} ${timings[name]}`)
+                }));
+        }
+        
+        function updateCountdownDisplay(nextPrayer, now) {
+            if (!nextPrayer) return;
+            const timeDiff = nextPrayer.time - now;
+            
+            if (timeDiff <= 0) {
+                clearInterval(countdownInterval);
+                fetchDailyData(); 
+                return;
+            }
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+            nextPrayerNameEl.textContent = nextPrayer.name;
+            countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            document.querySelectorAll('#prayer-times-list > div').forEach(div => {
+                const prayerNameEl = div.querySelector('span:first-child');
+                if (prayerNameEl && prayerNameEl.textContent === nextPrayer.name) {
+                    div.classList.add('bg-emerald-800', 'border-emerald-500');
+                } else {
+                    div.classList.remove('bg-emerald-800', 'border-emerald-500');
+                }
+            });
+        }
+        
+        function handleNotificationClick(prayerName, prayerTime) {
+            if (scheduledNotifications[prayerName]) {
+                console.log(`Notification for ${prayerName} is already scheduled.`);
+                return;
+            }
+            if (!('Notification' in window)) {
+                alert('This browser does not support desktop notification');
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    scheduleNotification(prayerName, prayerTime);
+                    document.querySelector(`#bell-${prayerName}`).classList.add('active');
+                    scheduledNotifications[prayerName] = true;
+                }
+            });
+        }
+
+        function scheduleNotification(prayerName, prayerTime) {
+            const now = new Date();
+            const timeDiff = prayerTime.getTime() - now.getTime();
+            if (timeDiff > 0) {
+                setTimeout(() => {
+                    new Notification('Prayer Time!', {
+                        body: `It's time for ${prayerName} prayer.`,
+                        icon: 'image_95c516.jpg'
+                    });
+                    adhanAudio.play().catch(e => console.error("Error playing adhan:", e));
+                    delete scheduledNotifications[prayerName];
+                    document.querySelector(`#bell-${prayerName}`).classList.remove('active');
+                }, timeDiff);
+                alert(`Notification set for ${prayerName} at ${formatTime(prayerTime.toTimeString())}.`);
+            } else {
+                alert(`${prayerName} time has already passed for today.`);
+            }
+        }
+
+        // --- 5. Settings & Location Search ---
+        async function searchLocation() {
+            const city = locationInput.value.trim();
+            suggestionsBox.classList.add('hidden');
+            if (!city) return;
+            showLoader();
+            try {
+                const geoResponse = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`);
+                if (!geoResponse.ok) throw new Error('Geocoding service failed.');
+                const geoData = await geoResponse.json();
+                if (geoData.length === 0) throw new Error(`Could not find location: ${city}`);
+                const { lat, lon, display_name } = geoData[0];
+                locationInput.value = display_name.split(',')[0];
+                handleNewCoordinates(parseFloat(lat), parseFloat(lon));
+            } catch (error) {
+                showError(`Could not find location for "${city}". Please try another name.`);
+            }
+        }
+
         async function fetchLocationSuggestions(query) {
             if (query.length < 3) {
                 suggestionsBox.classList.add('hidden');
@@ -275,7 +443,6 @@
                 suggestionsBox.classList.add('hidden');
                 return;
             }
-
             suggestions.forEach(place => {
                 const suggestionItem = document.createElement('div');
                 suggestionItem.className = 'p-2 hover:bg-gray-700 cursor-pointer text-sm';
@@ -287,111 +454,60 @@
                 };
                 suggestionsBox.appendChild(suggestionItem);
             });
-
             suggestionsBox.classList.remove('hidden');
         }
 
-        // --- 7. Display UI Elements ---
-        function displayDate(readableDate) {
-            dateEl.textContent = readableDate;
-        }
+        // --- 6. Event Listeners & Helpers ---
+        dailyViewBtn.addEventListener('click', () => {
+            dailyView.classList.remove('hidden');
+            monthlyView.classList.add('hidden');
+            dailyViewBtn.classList.add('active');
+            monthlyViewBtn.classList.remove('active');
+            fetchDailyData(); // Refresh daily data when switching
+        });
 
-        function displayPrayerTimes(timings) {
-            prayerTimesListEl.innerHTML = ''; 
-            const prayerOrder = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-
-            prayerOrder.forEach(prayer => {
-                const time = formatTime(timings[prayer]);
-                const prayerEl = document.createElement('div');
-                prayerEl.className = 'card flex justify-between items-center p-4 rounded-lg transition-all duration-300';
-                prayerEl.innerHTML = `
-                    <span class="text-lg font-medium">${prayer}</span>
-                    <span class="text-xl font-semibold">${time}</span>
-                `;
-                prayerTimesListEl.appendChild(prayerEl);
-            });
-        }
-
-        // --- 8. Countdown Logic ---
-        function startCountdown(timings) {
-            if (countdownInterval) clearInterval(countdownInterval);
-
-            const prayerTimes = getPrayerDateObjects(timings);
-            
-            countdownInterval = setInterval(() => {
-                const now = new Date();
-                let nextPrayer = prayerTimes.find(p => p.time > now);
-
-                if (!nextPrayer) {
-                    const tomorrowFajrTime = new Date(prayerTimes[0].time);
-                    tomorrowFajrTime.setDate(tomorrowFajrTime.getDate() + 1);
-                    nextPrayer = { name: 'Fajr', time: tomorrowFajrTime };
-                }
-                updateCountdownDisplay(nextPrayer, now);
-            }, 1000);
-        }
-
-        function updateCountdownDisplay(nextPrayer, now) {
-            const timeDiff = nextPrayer.time - now;
-            
-            if (timeDiff <= 0) {
-                clearInterval(countdownInterval);
-                fetchPrayerTimes(); 
-                return;
+        monthlyViewBtn.addEventListener('click', () => {
+            dailyView.classList.add('hidden');
+            monthlyView.classList.remove('hidden');
+            dailyViewBtn.classList.remove('active');
+            monthlyViewBtn.classList.add('active');
+            if (monthlyTableBody.innerHTML === '') {
+                fetchMonthlyData();
             }
+        });
 
-            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+        methodSelect.addEventListener('change', (e) => {
+            currentMethod = e.target.value;
+            handleNewCoordinates(currentLatitude, currentLongitude); // Refetch all data with new method
+        });
+        
+        locationInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                fetchLocationSuggestions(locationInput.value);
+            }, 300);
+        });
 
-            nextPrayerNameEl.textContent = nextPrayer.name;
-            countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            
-            document.querySelectorAll('#prayer-times-list > div').forEach(div => {
-                const prayerName = div.querySelector('span:first-child').textContent;
-                if (prayerName === nextPrayer.name) {
-                    div.classList.add('bg-emerald-800', 'border-emerald-500');
-                } else {
-                    div.classList.remove('bg-emerald-800', 'border-emerald-500');
-                }
-            });
-        }
-
-        // --- Helper Functions ---
-        function getPrayerDateObjects(timings) {
-            const todayStr = new Date().toDateString();
-            const prayerOrder = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-            return prayerOrder.map(name => ({
-                name: name,
-                time: new Date(`${todayStr} ${timings[name]}`)
-            }));
-        }
+        locationInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') searchLocation();
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!locationInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.classList.add('hidden');
+            }
+        });
         
         function formatTime(time24) {
             if (!time24) return 'N/A';
-            const [hours, minutes] = time24.split(':');
+            const timeString = time24.split(' ')[0];
+            const [hours, minutes] = timeString.split(':');
             const h = parseInt(hours, 10);
             const ampm = h >= 12 ? 'PM' : 'AM';
             const h12 = h % 12 || 12;
             return `${String(h12).padStart(2, '0')}:${minutes} ${ampm}`;
         }
-
-        function handleLocationError(error) {
-            let message = "An unknown error occurred.";
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    message = "Location access was denied. Please enable it in your browser settings or search for a city manually.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    message = "Location information is unavailable.";
-                    break;
-                case error.TIMEOUT:
-                    message = "The request to get user location timed out.";
-                    break;
-            }
-            showError(message);
-        }
-
+        
         function showLoader() {
             loader.classList.remove('hidden');
             errorMessage.classList.add('hidden');
@@ -410,33 +526,6 @@
             errorMessage.classList.add('hidden');
             mainContent.classList.remove('hidden');
         }
-
-        // --- Event Listeners ---
-        methodSelect.addEventListener('change', (e) => {
-            currentMethod = e.target.value;
-            showLoader();
-            fetchPrayerTimes();
-        });
-        
-        locationInput.addEventListener('input', () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                fetchLocationSuggestions(locationInput.value);
-            }, 300);
-        });
-
-        locationInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') {
-                searchLocation();
-            }
-        });
-        
-        // Hide suggestions when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!locationInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-                suggestionsBox.classList.add('hidden');
-            }
-        });
 
         // --- Initial Load ---
         window.onload = getUserLocation;
