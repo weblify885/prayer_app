@@ -9,229 +9,353 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #111827; /* gray-900 */
+            --bg-secondary: rgba(255, 255, 255, 0.05);
+            --text-primary: #F9FAFB; /* gray-50 */
+            --text-secondary: #9CA3AF; /* gray-400 */
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-primary: #10B981; /* emerald-500 */
+            --accent-secondary: #059669; /* emerald-600 */
+        }
+        .theme-light {
+            --bg-primary: #F3F4F6; /* gray-100 */
+            --bg-secondary: #FFFFFF;
+            --text-primary: #1F2937; /* gray-800 */
+            --text-secondary: #4B5563; /* gray-600 */
+            --border-color: #E5E7EB; /* gray-200 */
+        }
+        .theme-blue {
+            --bg-primary: #0c2444;
+            --bg-secondary: rgba(255, 255, 255, 0.07);
+            --text-primary: #E0F2FE; /* sky-50 */
+            --text-secondary: #93C5FD; /* blue-300 */
+            --border-color: rgba(255, 255, 255, 0.15);
+            --accent-primary: #38BDF8; /* sky-400 */
+            --accent-secondary: #0EA5E9; /* sky-500 */
+        }
         body {
             font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
         }
         .card {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: var(--bg-secondary);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
         }
         .next-prayer-card {
-            background: linear-gradient(135deg, #10B981, #059669);
-        }
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 1.25em;
-        }
-        .notification-bell.active {
-            color: #34D399; /* emerald-400 */
-        }
-        .view-toggle button.active, .main-nav button.active {
-            background-color: #059669; /* emerald-600 */
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             color: white;
         }
-        #monthly-view-container, #privacy-policy-content, .content-section {
-            max-height: 60vh;
-            overflow-y: auto;
+        select {
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25em;
         }
-        #suggestions-box {
-            max-height: 150px;
-            overflow-y: auto;
+        .theme-light select {
+             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='black'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
         }
-        .modal-backdrop {
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
+        .notification-bell.active { color: var(--accent-primary); }
+        .active-prayer {
+            background-color: var(--accent-secondary) !important;
+            border-color: var(--accent-primary) !important;
+            color: white !important;
         }
-        #qibla-needle {
-            transition: transform 0.5s ease-out;
-        }
+        .view-toggle button.active, .main-nav button.active { background-color: var(--accent-secondary); color: white; }
+        .content-section { max-height: 65vh; overflow-y: auto; }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); }
+        #qibla-needle { transition: transform 0.5s ease-out; }
+        .page-view { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #countdown.pulsate { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
     </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9042557168555887"
-     crossorigin="anonymous"></script>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+<body class="p-4">
 
     <div id="app-container" class="w-full max-w-lg mx-auto">
         
         <div id="loader" class="text-center hidden">
-            <svg class="animate-spin h-8 w-8 text-white mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <p class="text-lg">Fetching prayer times...</p>
+            <svg class="animate-spin h-8 w-8 text-[var(--text-primary)] mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <p class="text-lg">Fetching data...</p>
         </div>
 
         <div id="error-message" class="hidden text-center card p-6 rounded-2xl">
             <h2 class="text-xl font-bold text-red-400 mb-2">Error</h2>
-            <p id="error-text" class="text-gray-300"></p>
-            <button onclick="showLocationConsent()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Try Again</button>
+            <p id="error-text" class="text-[var(--text-secondary)]"></p>
+            <button onclick="showLocationConsent()" class="mt-4 bg-[var(--accent-secondary)] hover:opacity-90 text-white font-bold py-2 px-4 rounded-lg">Try Again</button>
         </div>
 
         <div id="main-content" class="hidden">
             <!-- Main Navigation -->
-            <nav class="main-nav flex justify-center mb-6 bg-gray-800 rounded-lg p-1 text-sm">
-                <button data-target="prayer-times-view" class="px-3 py-2 font-medium rounded-md flex-1 text-center active">Prayer Times</button>
-                <button data-target="qibla-view" class="px-3 py-2 font-medium rounded-md flex-1 text-center">Qibla</button>
-                <button data-target="about-view" class="px-3 py-2 font-medium rounded-md flex-1 text-center">About</button>
-                <button data-target="articles-view" class="px-3 py-2 font-medium rounded-md flex-1 text-center">Articles</button>
-                <button data-target="faq-view" class="px-3 py-2 font-medium rounded-md flex-1 text-center">FAQ</button>
+            <nav class="main-nav grid grid-cols-3 sm:flex justify-center mb-6 bg-[var(--bg-secondary)] rounded-lg p-1 text-sm gap-1">
+                <button data-target="prayer-times-view" class="px-2 py-2 font-medium rounded-md text-center active">Prayer Times</button>
+                <button data-target="qibla-view" class="px-2 py-2 font-medium rounded-md text-center">Qibla</button>
+                <button data-target="tasbeeh-view" class="px-2 py-2 font-medium rounded-md text-center">Tasbeeh</button>
+                <button data-target="names-view" class="px-2 py-2 font-medium rounded-md text-center">99 Names</button>
+                <button data-target="zakat-view" class="px-2 py-2 font-medium rounded-md text-center">Zakat</button>
+                <button data-target="articles-view" class="px-2 py-2 font-medium rounded-md text-center">Articles</button>
             </nav>
 
-            <!-- Prayer Times View -->
-            <div id="prayer-times-view" class="page-view">
-                <div class="text-center mb-4">
-                    <h1 id="date" class="text-2xl font-bold"></h1>
-                    <p id="hijri-date" class="text-md text-gray-400"></p>
-                    <p id="location" class="text-gray-400"></p>
-                </div>
-                <div class="card p-4 rounded-2xl mb-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="relative">
-                            <label for="location-input" class="block text-sm font-medium text-gray-300 mb-1">Change Location</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="location-input" placeholder="Enter city name" class="w-full bg-gray-700 text-white border-gray-600 rounded-lg px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500" autocomplete="off">
-                                <button onclick="searchLocation()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-lg transition-colors"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg></button>
-                            </div>
-                            <div id="suggestions-box" class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg hidden"></div>
-                        </div>
-                        <div>
-                            <label for="method-select" class="block text-sm font-medium text-gray-300 mb-1">Calculation Method</label>
-                            <select id="method-select" class="w-full bg-gray-700 text-white border-gray-600 rounded-lg px-3 py-2 focus:ring-emerald-500 focus:border-emerald-500">
-                                <option value="2">ISNA (North America)</option><option value="3">Muslim World League</option><option value="4">Umm Al-Qura, Makkah</option><option value="5">Egyptian General Authority</option><option value="1">University of Islamic Sciences, Karachi</option><option value="7">University of Tehran</option><option value="8">Gulf Region</option>
-                            </select>
-                        </div>
-                    </div>
-                     <button onclick="showLocationConsent()" class="mt-3 text-sm text-emerald-400 hover:text-emerald-300 w-full text-center">Use my current location</button>
-                </div>
-                <div class="next-prayer-card text-center p-6 rounded-2xl mb-8 shadow-lg">
-                    <p class="text-lg font-medium text-emerald-100">Time until</p>
-                    <h2 id="next-prayer-name" class="text-4xl font-bold my-1"></h2>
-                    <div id="countdown" class="text-5xl font-bold tracking-wider">00:00:00</div>
-                </div>
-                <div class="view-toggle flex justify-center mb-4 bg-gray-800 rounded-lg p-1">
-                    <button id="daily-view-btn" class="px-4 py-2 text-sm font-medium rounded-md w-1/2 active">Daily</button>
-                    <button id="monthly-view-btn" class="px-4 py-2 text-sm font-medium rounded-md w-1/2">Monthly</button>
-                </div>
-                <div id="daily-view"><div id="prayer-times-list" class="space-y-3"></div></div>
-                <div id="monthly-view" class="hidden"><div id="monthly-view-container" class="card p-2 rounded-lg"><table class="w-full text-sm text-left"><thead class="text-xs text-gray-300 uppercase bg-gray-700/50"><tr><th class="px-4 py-2">Date</th><th class="px-2 py-2">Fajr</th><th class="px-2 py-2">Dhuhr</th><th class="px-2 py-2">Asr</th><th class="px-2 py-2">Maghrib</th><th class="px-2 py-2">Isha</th></tr></thead><tbody id="monthly-table-body"></tbody></table></div></div>
-            </div>
+            <!-- All Page Views -->
+            <div id="prayer-times-view" class="page-view"></div>
+            <div id="qibla-view" class="page-view hidden"></div>
+            <div id="tasbeeh-view" class="page-view hidden"></div>
+            <div id="names-view" class="page-view hidden"></div>
+            <div id="zakat-view" class="page-view hidden"></div>
+            <div id="articles-view" class="page-view hidden"></div>
             
-            <!-- Qibla View -->
-            <div id="qibla-view" class="page-view hidden">
-                <div class="card p-6 rounded-2xl content-section text-center">
-                    <h2 class="text-2xl font-bold text-white mb-4">Qibla Direction</h2>
-                    <div id="qibla-permission-prompt">
-                        <p class="text-gray-300 mb-4">Click the button below to start the compass. You may need to grant permission to access your device's motion sensors.</p>
-                        <button id="start-qibla-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg">Start Compass</button>
-                    </div>
-                    <div id="qibla-compass-container" class="hidden">
-                        <div class="relative w-48 h-48 mx-auto my-4 bg-gray-700/50 rounded-full border-4 border-gray-500 flex items-center justify-center" id="compass-rose">
-                            <div class="absolute w-full h-full text-xs text-gray-400">
-                                <div class="absolute top-1 left-1/2 -translate-x-1/2">N</div>
-                                <div class="absolute bottom-1 left-1/2 -translate-x-1/2">S</div>
-                                <div class="absolute left-2 top-1/2 -translate-y-1/2">W</div>
-                                <div class="absolute right-2 top-1/2 -translate-y-1/2">E</div>
-                            </div>
-                            <div id="qibla-needle" class="w-1 h-20 bg-emerald-400 origin-bottom absolute bottom-1/2" style="transform: rotate(0deg);">
-                                <div class="w-3 h-3 border-2 border-emerald-400 bg-gray-900 rounded-full absolute -top-1.5 -left-1"></div>
-                            </div>
-                        </div>
-                        <p class="text-lg">Qibla is at <span id="qibla-direction-degrees" class="font-bold">...</span>&deg;</p>
-                    </div>
-                    <div id="qibla-error" class="text-red-400 mt-4 hidden"></div>
-                </div>
-            </div>
-
-            <!-- About View -->
-            <div id="about-view" class="page-view hidden">
-                <div class="card p-6 rounded-2xl content-section space-y-4">
-                    <h2 class="text-2xl font-bold text-white mb-4">About Calculation Methods</h2>
-                    <div><h3 class="font-semibold text-lg text-emerald-400">ISNA (Islamic Society of North America)</h3><p class="text-gray-300 text-sm">Uses a Fajr angle of 15 degrees and an Isha angle of 15 degrees. Widely used in North America.</p></div>
-                    <div><h3 class="font-semibold text-lg text-emerald-400">Muslim World League</h3><p class="text-gray-300 text-sm">A common standard using a Fajr angle of 18 degrees and an Isha angle of 17 degrees. Used in parts of Europe, the Far East, and America.</p></div>
-                    <div><h3 class="font-semibold text-lg text-emerald-400">Umm Al-Qura, Makkah</h3><p class="text-gray-300 text-sm">Uses a Fajr angle of 18.5 degrees and a fixed Isha time of 90 minutes after Maghrib (120 during Ramadan). Standard in Saudi Arabia.</p></div>
-                    <div><h3 class="font-semibold text-lg text-emerald-400">Egyptian General Authority</h3><p class="text-gray-300 text-sm">Uses a Fajr angle of 19.5 degrees and an Isha angle of 17.5 degrees. Used in Africa, Syria, and Iraq.</p></div>
-                    <div><h3 class="font-semibold text-lg text-emerald-400">University of Islamic Sciences, Karachi</h3><p class="text-gray-300 text-sm">Uses a Fajr angle of 18 degrees and an Isha angle of 18 degrees. Common in Pakistan, Bangladesh, India, and Afghanistan.</p></div>
-                </div>
-            </div>
-
-            <!-- Articles View -->
-            <div id="articles-view" class="page-view hidden">
-                <div class="card p-6 rounded-2xl content-section space-y-8">
-                    <article>
-                        <h2 class="text-2xl font-bold text-white mb-4">The Significance of Salah (Prayer)</h2>
-                        <img src="https://images.unsplash.com/photo-1580048223961-2661a55a894a?q=80&w=400" class="rounded-lg mb-4" alt="Kaaba">
-                        <p class="text-gray-300">Salah, the ritual prayer, is the second pillar of Islam and a fundamental act of worship that establishes a direct connection between a Muslim and Allah. It is performed five times a day at specific times: Fajr (dawn), Dhuhr (midday), Asr (late afternoon), Maghrib (sunset), and Isha (night). Each prayer is a spiritual refreshment, a reminder of our purpose in life, and a moment of peace and reflection away from worldly distractions.</p>
-                        <p class="text-gray-300 mt-2">The Quran and Hadith emphasize the importance of prayer countless times. It is described as a key to paradise, a means of seeking forgiveness, and a way to attain righteousness and discipline. Performing Salah regularly instills a sense of gratitude, humility, and mindfulness, structuring a Muslim's day around the remembrance of God.</p>
-                    </article>
-                    <hr class="border-gray-700">
-                    <article>
-                        <h2 class="text-2xl font-bold text-white mb-4">The Purity of Wudu (Ablution)</h2>
-                        <img src="https://images.unsplash.com/photo-1556403836-36a2b53e405c?q=80&w=400" class="rounded-lg mb-4" alt="Water for ablution">
-                        <p class="text-gray-300">Wudu is the ritual washing performed by Muslims before prayer. It is a physical and spiritual purification. The act of washing the hands, face, arms, and feet is not merely for physical cleanliness but also serves as a means of washing away minor sins. The Prophet Muhammad (peace be upon him) said, "When a Muslim servant or a believer washes his face (in the course of Wudu), every sin he contemplated with his eyes will be washed away from his face with the water..."</p>
-                        <p class="text-gray-300 mt-2">This preparation for prayer helps one to enter a state of mindfulness and reverence, leaving behind the impurities of the world to stand before God. It highlights the Islamic emphasis on both inner and outer purity.</p>
-                    </article>
-                    <hr class="border-gray-700">
-                    <article>
-                        <h2 class="text-2xl font-bold text-white mb-4">The Power of Dhikr (Remembrance)</h2>
-                        <img src="https://images.unsplash.com/photo-1609597332169-55ac9683e3e1?q=80&w=400" class="rounded-lg mb-4" alt="Person holding prayer beads">
-                        <p class="text-gray-300">Dhikr is the remembrance of Allah through the repetition of His names or phrases of praise and glorification. It is a powerful form of worship that can be done at any time and in any place. The Quran says, "Verily, in the remembrance of Allah do hearts find rest" (13:28). Engaging in Dhikr helps to keep the heart connected to the Divine, providing tranquility and strength in times of both ease and hardship.</p>
-                        <p class="text-gray-300 mt-2">Whether through a tasbeeh (prayer beads) or simply on one's fingers, the act of remembering Allah keeps the tongue moist with His praise and the heart illuminated with His light. It is a simple yet profound practice that strengthens faith and brings immense reward.</p>
-                    </article>
-                </div>
-            </div>
-
-            <!-- FAQ View -->
-            <div id="faq-view" class="page-view hidden">
-                <div class="card p-6 rounded-2xl content-section space-y-4">
-                    <h2 class="text-2xl font-bold text-white mb-4">Frequently Asked Questions</h2>
-                    <div><h3 class="font-semibold text-lg text-emerald-400">Why does the app need my location?</h3><p class="text-gray-300 text-sm">Prayer times are calculated based on the position of the sun, which varies depending on your geographic coordinates (latitude and longitude). We need your location to provide the most accurate prayer times for your specific area.</p></div>
-                    <div><h3 class="font-semibold text-lg text-emerald-400">Which calculation method should I use?</h3><p class="text-gray-300 text-sm">The best method depends on your region. Check with your local mosque or community to see which standard they follow. The "About" tab provides more details on each method.</p></div>
-                    <div><h3 class="font-semibold text-lg text-emerald-400">How do notifications work?</h3><p class="text-gray-300 text-sm">Click the bell icon next to a prayer time to set a one-time notification. Your browser will ask for permission. The notification will trigger at the exact prayer time, and if you have an `adhan.mp3` file, it will play the call to prayer.</p></div>
-                     <div><h3 class="font-semibold text-lg text-emerald-400">Is my data safe?</h3><p class="text-gray-300 text-sm">Yes. We only use your location to calculate prayer times. We do not store or share your location data. Please see our Privacy Policy for more details.</p></div>
-                </div>
-            </div>
-
             <footer class="text-center mt-8">
-                <button id="privacy-policy-btn" class="text-sm text-gray-500 hover:text-gray-400">Privacy Policy</button>
+                <button id="privacy-policy-btn" class="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Privacy Policy</button>
             </footer>
         </div>
     </div>
 
-    <!-- Modals and Audio -->
-    <div id="location-consent-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden"><div class="card w-full max-w-sm p-6 rounded-2xl text-center"><h3 class="text-lg font-bold mb-2">Location Access</h3><p class="text-gray-300 mb-6">Allow location access to show prayer times for your current area.</p><div class="flex justify-center gap-4"><button id="deny-location-btn" class="px-6 py-2 rounded-lg bg-gray-600 hover:bg-gray-500">Deny</button><button id="allow-location-btn" class="px-6 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500">Allow</button></div></div></div>
-    <div id="privacy-policy-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden"><div class="card w-full max-w-2xl p-6 rounded-2xl"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Privacy Policy</h3><button id="close-privacy-btn" class="text-gray-400 hover:text-white">&times;</button></div><div id="privacy-policy-content" class="text-gray-300 space-y-3 text-sm"><p><strong>Last Updated: July 10, 2025</strong></p><p>This Privacy Policy explains how we collect, use, and disclose information about you when you use our Islamic Prayer Times application.</p><div><h4 class="font-semibold text-white mb-1">1. Information We Collect</h4><p><strong>Location Data:</strong> We collect your precise geographic location (latitude and longitude) to calculate and display accurate Islamic prayer times for your specific area. This data is fundamental to the core functionality of the app.</p></div><div><h4 class="font-semibold text-white mb-1">2. How We Use Your Information</h4><p>Your location data is used exclusively to provide you with the services you request... We do not store your location history...</p></div><div><h4 class="font-semibold text-white mb-1">3. Advertising and Cookies</h4><p>We may use Google AdSense...<ul><li>Third-party vendors, including Google, use cookies to serve ads...</li><li>Google's use of advertising cookies enables it and its partners to serve ads...</li><li>You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" class="text-emerald-400 hover:underline">Ads Settings</a>.</li></ul></p></div><div><h4 class="font-semibold text-white mb-1">4. Your Consent</h4><p>By using our application and allowing location access, you consent to the collection and use of your location data as described in this policy...</p></div></div></div></div>
+    <!-- All Modals -->
+    <div id="location-consent-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden"></div>
+    <div id="privacy-policy-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden"></div>
+    <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden"></div>
+    <div id="onboarding-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden"></div>
+    
     <audio id="adhan-audio" src="adhan.mp3" preload="auto"></audio>
-
+    
     <script>
-        // DOM Elements
+        // --- DATA ---
+        const hadithCollection = [
+            { text: "The Prophet (ﷺ) said, 'The seeking of knowledge is obligatory for every Muslim.'", reference: "Sunan Ibn Majah 224" },
+            { text: "The Prophet (ﷺ) said, 'He who loves my Sunnah has loved me, and he who loves me will be with me in Paradise.'", reference: "Jami` at-Tirmidhi 2678" },
+            { text: "The Prophet (ﷺ) said, 'The best among you are those who have the best manners and character.'", reference: "Sahih al-Bukhari 6029" },
+            { text: "The Prophet (ﷺ) said, 'A man's true wealth is the good he does in this world.'", reference: "Musnad Ahmad" }
+        ];
+        const asmaUlHusna = [ { name: "Ar-Rahman", meaning: "The Beneficent" }, { name: "Ar-Rahim", meaning: "The Merciful" }, { name: "Al-Malik", meaning: "The King" }, { name: "Al-Quddus", meaning: "The Holy" }, { name: "As-Salam", meaning: "The Source of Peace" }, { name: "Al-Mu'min", meaning: "The Guardian of Faith" }, { name: "Al-Muhaymin", meaning: "The Protector" }, { name: "Al-Aziz", meaning: "The Mighty" }, { name: "Al-Jabbar", meaning: "The Compeller" }, { name: "Al-Mutakabbir", meaning: "The Majestic" } ];
+        const goldPricePerGram = 65;
+        const silverPricePerGram = 0.8;
+        const nisabValue = goldPricePerGram * 85;
+
+        // --- DOM ELEMENTS ---
         const loader = document.getElementById('loader');
         const mainContent = document.getElementById('main-content');
         const errorMessage = document.getElementById('error-message');
         const errorText = document.getElementById('error-text');
-        const dateEl = document.getElementById('date');
-        const hijriDateEl = document.getElementById('hijri-date');
-        const locationEl = document.getElementById('location');
         const locationConsentModal = document.getElementById('location-consent-modal');
         const privacyPolicyModal = document.getElementById('privacy-policy-modal');
+        const settingsModal = document.getElementById('settings-modal');
         const mainNavButtons = document.querySelectorAll('.main-nav button');
         const pageViews = document.querySelectorAll('.page-view');
         
-        // App State
+        // --- APP STATE ---
         let countdownInterval;
         let currentLatitude, currentLongitude;
-        let currentMethod = 2;
+        let currentMethod = 4; // Default to Umm Al-Qura
         let scheduledNotifications = {};
         let debounceTimer;
+        let ramadanMode = false;
+        
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            renderAllViews();
+            setupEventListeners();
+            applyTheme(localStorage.getItem('prayerAppTheme') || 'theme-dark');
+            ramadanMode = localStorage.getItem('ramadanMode') === 'true';
+            document.getElementById('ramadan-toggle').checked = ramadanMode;
+            
+            if (!localStorage.getItem('onboardingComplete')) {
+                startOnboarding();
+            } else {
+                showLocationConsent();
+            }
+            displayRandomHadith();
+            populateNamesList();
+        };
 
-        // --- 1. Initialization & Consent ---
+        function renderAllViews() {
+            document.getElementById('prayer-times-view').innerHTML = `
+                <div class="text-center mb-6">
+                    <h1 id="date" class="text-xl md:text-2xl font-bold"></h1>
+                    <p id="hijri-date" class="text-sm md:text-md text-[var(--text-secondary)]"></p>
+                    <div id="location-container" class="relative mt-2">
+                        <div id="location-display" class="flex justify-center items-center gap-2 text-md text-[var(--text-primary)] cursor-pointer hover:opacity-80 transition-opacity">
+                            <p id="location-text"></p>
+                            <svg class="w-4 h-4 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L16.732 3.732z"></path></svg>
+                        </div>
+                        <div id="location-input-wrapper" class="hidden relative w-full max-w-xs mx-auto">
+                            <input type="text" id="location-input" placeholder="Enter city..." class="w-full bg-transparent border-b-2 border-[var(--border-color)] text-center focus:outline-none focus:border-[var(--accent-primary)]">
+                            <div id="suggestions-box" class="absolute z-10 w-full mt-1 text-left bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg shadow-lg hidden"></div>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-center items-center gap-2 text-xs text-[var(--text-secondary)]">
+                        <span>Calculation Method:</span>
+                        <span id="current-method-display" class="font-semibold text-[var(--text-primary)]"></span>
+                        <button id="settings-btn" class="p-1 rounded-full hover:bg-[var(--bg-secondary)]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></button>
+                    </div>
+                </div>
+                <div class="card p-4 rounded-xl mb-6 text-center"><h4 class="font-semibold text-sm text-[var(--accent-primary)] mb-1">Hadith of the Day</h4><p id="hadith-text" class="text-sm"></p><p id="hadith-reference" class="text-xs text-[var(--text-secondary)] mt-1"></p></div>
+                <div class="next-prayer-card text-center p-6 rounded-2xl mb-8 shadow-lg"><p id="next-prayer-label" class="text-lg font-medium">Time until</p><h2 id="next-prayer-name" class="text-4xl font-bold my-1"></h2><div id="countdown" class="text-5xl font-bold tracking-wider">00:00:00</div></div>
+                <div class="view-toggle flex justify-center mb-4 bg-[var(--bg-secondary)] rounded-lg p-1"><button id="daily-view-btn" class="px-4 py-2 text-sm font-medium rounded-md w-1/2 active">Daily</button><button id="monthly-view-btn" class="px-4 py-2 text-sm font-medium rounded-md w-1/2">Monthly</button></div>
+                <div id="daily-view"><div id="prayer-times-list" class="space-y-3"></div></div>
+                <div id="monthly-view" class="hidden"><div id="monthly-view-container" class="card p-2 rounded-lg"><table class="w-full text-sm text-left"><thead class="text-xs text-[var(--text-secondary)] uppercase bg-[var(--bg-secondary)]"><tr><th class="px-4 py-2">Date</th><th class="px-2 py-2">Fajr</th><th class="px-2 py-2">Dhuhr</th><th class="px-2 py-2">Asr</th><th class="px-2 py-2">Maghrib</th><th class="px-2 py-2">Isha</th></tr></thead><tbody id="monthly-table-body"></tbody></table></div></div>
+            `;
+            document.getElementById('qibla-view').innerHTML = `<div class="card p-6 rounded-2xl content-section text-center"><h2 class="text-2xl font-bold mb-4">Qibla Direction</h2><div id="qibla-permission-prompt"><p class="text-[var(--text-secondary)] mb-4">Click the button below to start the compass. You may need to grant permission to access your device's motion sensors.</p><button id="start-qibla-btn" class="bg-[var(--accent-secondary)] hover:opacity-90 text-white font-bold py-2 px-4 rounded-lg">Start Compass</button></div><div id="qibla-compass-container" class="hidden"><div class="relative w-48 h-48 mx-auto my-4 bg-gray-700/50 rounded-full border-4 border-gray-500 flex items-center justify-center" id="compass-rose"><div class="absolute w-full h-full text-xs text-gray-400"><div class="absolute top-1 left-1/2 -translate-x-1/2">N</div><div class="absolute bottom-1 left-1/2 -translate-x-1/2">S</div><div class="absolute left-2 top-1/2 -translate-y-1/2">W</div><div class="absolute right-2 top-1/2 -translate-y-1/2">E</div></div><div id="qibla-needle" class="w-1 h-20 bg-[var(--accent-primary)] origin-bottom absolute bottom-1/2" style="transform: rotate(0deg);"><div class="w-3 h-3 border-2 border-[var(--accent-primary)] bg-[var(--bg-primary)] rounded-full absolute -top-1.5 -left-1"></div></div></div><p class="text-lg">Qibla is at <span id="qibla-direction-degrees" class="font-bold">...</span>&deg;</p></div><div id="qibla-error" class="text-red-400 mt-4 hidden"></div></div>`;
+            document.getElementById('tasbeeh-view').innerHTML = `<div class="card p-6 rounded-2xl text-center"><h2 class="text-2xl font-bold mb-4">Tasbeeh Counter</h2><div id="tasbeeh-display" class="text-7xl font-bold my-8">0</div><div class="flex items-center justify-center gap-4 mb-6"><label for="tasbeeh-target" class="text-sm">Target:</label><input type="number" id="tasbeeh-target" value="33" class="w-20 bg-transparent border-b-2 border-[var(--border-color)] text-center"></div><button id="tasbeeh-tap-area" class="w-48 h-48 rounded-full bg-[var(--accent-secondary)] flex items-center justify-center text-2xl font-bold mx-auto shadow-lg active:scale-95 transition-transform">TAP</button><button id="tasbeeh-reset-btn" class="mt-6 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Reset</button></div>`;
+            document.getElementById('names-view').innerHTML = `<div class="card p-2 rounded-2xl content-section"><div id="names-list" class="space-y-2 p-4"></div></div>`;
+            document.getElementById('zakat-view').innerHTML = `<div class="card p-6 rounded-2xl content-section space-y-4"><h2 class="text-2xl font-bold mb-4">Zakat Calculator</h2><p class="text-sm text-[var(--text-secondary)]">Enter your assets to calculate the Zakat due (2.5%). This is an estimate. Consult a scholar for precise calculations.</p><div><label>Cash (in hand, bank)</label><input type="number" id="zakat-cash" class="w-full mt-1 p-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)]" placeholder="0.00"></div><div><label>Gold (grams)</label><input type="number" id="zakat-gold" class="w-full mt-1 p-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)]" placeholder="0.0"></div><div><label>Silver (grams)</label><input type="number" id="zakat-silver" class="w-full mt-1 p-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)]" placeholder="0.0"></div><button id="zakat-calculate-btn" class="w-full py-2 mt-4 rounded-lg bg-[var(--accent-secondary)] text-white font-bold">Calculate</button><div id="zakat-result" class="text-center mt-4 hidden"><p>Estimated Zakat Due:</p><p id="zakat-amount" class="text-3xl font-bold text-[var(--accent-primary)]"></p></div></div>`;
+            document.getElementById('articles-view').innerHTML = `<div class="card p-6 rounded-2xl content-section space-y-8"><article><h2 class="text-2xl font-bold text-white mb-4">The Significance of Salah (Prayer)</h2><img src="https://images.unsplash.com/photo-1580048223961-2661a55a894a?q=80&w=400" class="rounded-lg mb-4" alt="Kaaba"><p class="text-[var(--text-secondary)]">Salah, the ritual prayer, is the second pillar of Islam... Each prayer is a spiritual refreshment...</p><p class="text-[var(--text-secondary)] mt-2">The Quran and Hadith emphasize the importance of prayer... Performing Salah regularly instills a sense of gratitude...</p></article><hr class="border-gray-700"><article><h2 class="text-2xl font-bold text-white mb-4">The Purity of Wudu (Ablution)</h2><img src="https://images.unsplash.com/photo-1556403836-36a2b53e405c?q=80&w=400" class="rounded-lg mb-4" alt="Water for ablution"><p class="text-[var(--text-secondary)]">Wudu is the ritual washing performed by Muslims before prayer... serves as a means of washing away minor sins...</p></article><hr class="border-gray-700"><article><h2 class="text-2xl font-bold text-white mb-4">The Power of Dhikr (Remembrance)</h2><img src="https://images.unsplash.com/photo-1609597332169-55ac9683e3e1?q=80&w=400" class="rounded-lg mb-4" alt="Person holding prayer beads"><p class="text-[var(--text-secondary)]">Dhikr is the remembrance of Allah... The Quran says, "Verily, in the remembrance of Allah do hearts find rest" (13:28)...</p></article></div>`;
+            locationConsentModal.innerHTML = `<div class="card w-full max-w-sm p-6 rounded-2xl text-center"><h3 class="text-lg font-bold mb-2">Location Access</h3><p class="text-[var(--text-secondary)] mb-6">Allow location access to show prayer times for your current area.</p><div class="flex justify-center gap-4"><button id="deny-location-btn" class="px-6 py-2 rounded-lg bg-gray-600 hover:bg-gray-500">Deny</button><button id="allow-location-btn" class="px-6 py-2 rounded-lg bg-[var(--accent-secondary)] hover:opacity-90">Allow</button></div></div>`;
+            privacyPolicyModal.innerHTML = `<div class="card w-full max-w-2xl p-6 rounded-2xl"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Privacy Policy</h3><button id="close-privacy-btn" class="text-2xl">&times;</button></div><div id="privacy-policy-content" class="text-[var(--text-secondary)] space-y-3 text-sm"><p><strong>Last Updated: July 30, 2025</strong></p> ... </div></div>`;
+            settingsModal.innerHTML = `<div class="card w-full max-w-sm p-6 rounded-2xl"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Settings</h3><button id="close-settings-btn" class="text-2xl">&times;</button></div><div class="space-y-4"><div><label class="block mb-2 text-sm font-medium">Calculation Method</label><select id="method-select" class="w-full p-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)]"><option value="4">Umm Al-Qura, Makkah</option><option value="2">ISNA (North America)</option><option value="3">Muslim World League</option><option value="5">Egyptian General Authority</option><option value="1">U. of Islamic Sciences, Karachi</option></select></div><div><label class="block mb-2 text-sm font-medium">Theme</label><div class="flex gap-2"><button class="theme-btn flex-1 py-2 rounded-lg border-2 border-transparent" data-theme="theme-dark" style="background-color:#111827; color:white;">Dark</button><button class="theme-btn flex-1 py-2 rounded-lg border-2 border-transparent" data-theme="theme-light" style="background-color:#F3F4F6; color:black;">Light</button><button class="theme-btn flex-1 py-2 rounded-lg border-2 border-transparent" data-theme="theme-blue" style="background-color:#0c2444; color:white;">Blue</button></div></div><div><label class="block mb-2 text-sm font-medium">Ramadan Mode</label><div class="flex items-center justify-between p-2 rounded-lg bg-[var(--bg-secondary)]"><span>Show Suhoor/Iftar Times</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="ramadan-toggle" class="sr-only peer"><div class="w-11 h-6 bg-gray-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent-secondary)]"></div></label></div></div></div></div>`;
+        }
+        
+        function setupEventListeners() {
+            document.getElementById('allow-location-btn').addEventListener('click', requestLocationPermission);
+            document.getElementById('deny-location-btn').addEventListener('click', () => {
+                locationConsentModal.classList.add('hidden');
+                showError("Location access is required for automatic prayer times. Please search for a location manually.");
+                handleNewCoordinates(21.4225, 39.8262);
+            });
+            document.getElementById('settings-btn').addEventListener('click', () => settingsModal.classList.remove('hidden'));
+            document.getElementById('close-settings-btn').addEventListener('click', () => settingsModal.classList.add('hidden'));
+            document.getElementById('privacy-policy-btn').addEventListener('click', () => privacyPolicyModal.classList.remove('hidden'));
+            document.getElementById('close-privacy-btn').addEventListener('click', () => privacyPolicyModal.classList.add('hidden'));
+            document.getElementById('start-qibla-btn').addEventListener('click', startQiblaCompass);
+            
+            mainNavButtons.forEach(button => button.addEventListener('click', () => switchView(button.dataset.target)));
+            document.querySelectorAll('.theme-btn').forEach(button => button.addEventListener('click', () => applyTheme(button.dataset.theme)));
+            document.getElementById('ramadan-toggle').addEventListener('change', (e) => handleRamadanMode(e.target.checked));
+            document.getElementById('method-select').addEventListener('change', (e) => {
+                currentMethod = e.target.value;
+                if(currentLatitude) handleNewCoordinates(currentLatitude, currentLongitude);
+                settingsModal.classList.add('hidden');
+            });
+            
+            setupTasbeehCounter();
+            setupZakatCalculator();
+            
+            document.getElementById('daily-view-btn').addEventListener('click', () => {
+                document.getElementById('daily-view').classList.remove('hidden');
+                document.getElementById('monthly-view').classList.add('hidden');
+                document.getElementById('daily-view-btn').classList.add('active');
+                document.getElementById('monthly-view-btn').classList.remove('active');
+                if(currentLatitude) fetchDailyData();
+            });
+
+            document.getElementById('monthly-view-btn').addEventListener('click', () => {
+                document.getElementById('daily-view').classList.add('hidden');
+                document.getElementById('monthly-view').classList.remove('hidden');
+                document.getElementById('daily-view-btn').classList.remove('active');
+                document.getElementById('monthly-view-btn').classList.add('active');
+                if (currentLatitude && document.getElementById('monthly-table-body').innerHTML === '') {
+                    fetchMonthlyData();
+                }
+            });
+            
+            const locationDisplay = document.getElementById('location-display');
+            const locationInputWrapper = document.getElementById('location-input-wrapper');
+            const locationInput = document.getElementById('location-input');
+
+            locationDisplay.addEventListener('click', () => {
+                locationDisplay.classList.add('hidden');
+                locationInputWrapper.classList.remove('hidden');
+                locationInput.focus();
+            });
+
+            locationInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    if (!document.getElementById('suggestions-box').matches(':hover')) {
+                        locationDisplay.classList.remove('hidden');
+                        locationInputWrapper.classList.add('hidden');
+                    }
+                }, 200);
+            });
+
+            locationInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    fetchLocationSuggestions(locationInput.value);
+                }, 300);
+            });
+            locationInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') searchLocation(); });
+        }
+        
+        function startOnboarding() {
+            localStorage.setItem('onboardingComplete', 'true');
+            showLocationConsent();
+        }
+
+        function applyTheme(themeName) {
+            document.body.className = 'p-4';
+            document.body.classList.add(themeName);
+            localStorage.setItem('prayerAppTheme', themeName);
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.style.borderColor = btn.dataset.theme === themeName ? 'var(--accent-primary)' : 'transparent';
+            });
+        }
+        
+        function displayRandomHadith() {
+            const hadith = hadithCollection[Math.floor(Math.random() * hadithCollection.length)];
+            document.getElementById('hadith-text').textContent = hadith.text;
+            document.getElementById('hadith-reference').textContent = hadith.reference;
+        }
+
+        function handleRamadanMode(isActive) {
+            ramadanMode = isActive;
+            localStorage.setItem('ramadanMode', isActive);
+            if(currentLatitude) fetchDailyData();
+        }
+
+        function populateNamesList() {
+            const namesList = document.getElementById('names-list');
+            if (!namesList) return;
+            namesList.innerHTML = '';
+            asmaUlHusna.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'p-3 border-b border-[var(--border-color)]';
+                div.innerHTML = `<p class="font-bold text-lg text-[var(--accent-primary)]">${item.name}</p><p class="text-sm text-[var(--text-secondary)]">${item.meaning}</p>`;
+                namesList.appendChild(div);
+            });
+        }
+
+        function setupTasbeehCounter() {
+            const display = document.getElementById('tasbeeh-display');
+            const tapArea = document.getElementById('tasbeeh-tap-area');
+            const resetBtn = document.getElementById('tasbeeh-reset-btn');
+            const targetInput = document.getElementById('tasbeeh-target');
+            let count = 0;
+
+            tapArea.addEventListener('click', () => {
+                count++;
+                display.textContent = count;
+                const target = parseInt(targetInput.value, 10);
+                if (count > 0 && count % target === 0) {
+                   if (navigator.vibrate) navigator.vibrate(200);
+                }
+            });
+            resetBtn.addEventListener('click', () => {
+                count = 0;
+                display.textContent = count;
+            });
+        }
+
+        function setupZakatCalculator() {
+            const calculateBtn = document.getElementById('zakat-calculate-btn');
+            calculateBtn.addEventListener('click', () => {
+                const cash = parseFloat(document.getElementById('zakat-cash').value) || 0;
+                const gold = parseFloat(document.getElementById('zakat-gold').value) || 0;
+                const silver = parseFloat(document.getElementById('zakat-silver').value) || 0;
+                
+                const totalAssets = cash + (gold * goldPricePerGram) + (silver * silverPricePerGram);
+                
+                let zakatAmount = 0;
+                if (totalAssets >= nisabValue) {
+                    zakatAmount = totalAssets * 0.025;
+                }
+                
+                document.getElementById('zakat-amount').textContent = `$${zakatAmount.toFixed(2)}`;
+                document.getElementById('zakat-result').classList.remove('hidden');
+            });
+        }
+        
         function showLocationConsent() {
             errorMessage.classList.add('hidden');
             locationConsentModal.classList.remove('hidden');
@@ -245,12 +369,12 @@
                     position => handleNewCoordinates(position.coords.latitude, position.coords.longitude),
                     () => {
                         showError("Geolocation failed. Please search for a location manually.");
-                        handleNewCoordinates(21.4225, 39.8262); // Fallback to Mecca
+                        handleNewCoordinates(21.4225, 39.8262);
                     }
                 );
             } else {
                  showError("Geolocation is not supported. Please search for a location manually.");
-                 handleNewCoordinates(21.4225, 39.8262); // Fallback
+                 handleNewCoordinates(21.4225, 39.8262);
             }
         }
 
@@ -259,14 +383,13 @@
             currentLongitude = longitude;
             document.getElementById('monthly-table-body').innerHTML = '';
             if (document.getElementById('prayer-times-view').classList.contains('hidden')) {
-                // If another view is active, don't fetch prayer times yet
+                // Do nothing
             } else {
                 fetchDailyData();
             }
             fetchLocationName();
         }
 
-        // --- 2. Data Fetching ---
         async function fetchDailyData() {
             if (!currentLatitude) return;
             showLoader();
@@ -276,8 +399,10 @@
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 if (data.code === 200) {
-                    displayPrayerTimes(data.data.timings);
-                    startCountdown(data.data.timings);
+                    const timings = data.data.timings;
+                    
+                    displayPrayerTimes(timings);
+                    startCountdown(timings);
                     displayDate(data.data.date);
                     showMainContent();
                 } else { throw new Error(data.status); }
@@ -297,7 +422,7 @@
                 const data = await response.json();
                 if (data.code === 200) {
                     displayMonthlyCalendar(data.data);
-                    if (!dateEl.textContent) { displayDate(data.data[new Date().getDate() - 1].date); }
+                    if (!document.getElementById('date').textContent) { displayDate(data.data[new Date().getDate() - 1].date); }
                     showMainContent();
                 } else { throw new Error(data.status); }
             } catch (error) { showError(`Failed to fetch monthly prayer times. ${error.message}`); }
@@ -307,38 +432,43 @@
             try {
                 const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${currentLatitude}&longitude=${currentLongitude}&localityLanguage=en`);
                 const data = await response.json();
-                locationEl.textContent = `${data.city || data.locality}, ${data.countryName}`;
+                document.getElementById('location-text').textContent = `${data.city || data.locality}, ${data.countryName}`;
             } catch (error) {
                 console.warn("Could not fetch location name:", error);
-                locationEl.textContent = `Lat: ${currentLatitude.toFixed(2)}, Lon: ${currentLongitude.toFixed(2)}`;
+                document.getElementById('location-text').textContent = `Lat: ${currentLatitude.toFixed(2)}, Lon: ${currentLongitude.toFixed(2)}`;
             }
         }
         
-        // --- 3. UI Display & Navigation ---
         function switchView(targetId) {
-            pageViews.forEach(view => {
-                view.classList.toggle('hidden', view.id !== targetId);
-            });
-            mainNavButtons.forEach(button => {
-                button.classList.toggle('active', button.dataset.target === targetId);
-            });
+            pageViews.forEach(view => view.classList.toggle('hidden', view.id !== targetId));
+            mainNavButtons.forEach(button => button.classList.toggle('active', button.dataset.target === targetId));
         }
 
         function displayDate(dateData) {
-            dateEl.textContent = dateData.readable;
-            hijriDateEl.textContent = `${dateData.hijri.weekday.en} ${dateData.hijri.day} ${dateData.hijri.month.en}, ${dateData.hijri.year}`;
+            document.getElementById('date').textContent = dateData.readable;
+            document.getElementById('hijri-date').textContent = `${dateData.hijri.weekday.en} ${dateData.hijri.day} ${dateData.hijri.month.en}, ${dateData.hijri.year}`;
         }
 
         function displayPrayerTimes(timings) {
             const prayerTimesListEl = document.getElementById('prayer-times-list');
             prayerTimesListEl.innerHTML = '';
-            const prayerOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+            let prayerOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+            if(ramadanMode) {
+                timings['Suhoor'] = timings['Imsak'];
+                prayerOrder.unshift('Suhoor');
+                timings['Iftar'] = timings['Maghrib'];
+                prayerOrder[prayerOrder.indexOf('Maghrib')] = 'Iftar';
+            }
             const todayStr = new Date().toDateString();
             prayerOrder.forEach(prayer => {
-                const prayerTime = new Date(`${todayStr} ${timings[prayer]}`);
-                const time = formatTime(timings[prayer]);
+                const originalPrayerName = (prayer === 'Iftar' ? 'Maghrib' : (prayer === 'Suhoor' ? 'Imsak' : prayer));
+                if(!timings[originalPrayerName]) return;
+
+                const prayerTime = new Date(`${todayStr} ${timings[originalPrayerName]}`);
+                const time = formatTime(timings[originalPrayerName]);
                 const prayerEl = document.createElement('div');
-                prayerEl.className = 'card flex justify-between items-center p-4 rounded-lg';
+                prayerEl.className = 'card flex justify-between items-center p-4 rounded-lg prayer-row';
+                prayerEl.dataset.prayerName = prayer;
                 const bellId = `bell-${prayer}`;
                 const isScheduled = scheduledNotifications[prayer];
                 prayerEl.innerHTML = `<span class="text-lg font-medium">${prayer}</span><div class="flex items-center gap-4"><span class="text-xl font-semibold">${time}</span><svg id="${bellId}" class="w-6 h-6 text-gray-400 hover:text-white cursor-pointer notification-bell ${isScheduled ? 'active' : ''}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg></div>`;
@@ -352,13 +482,12 @@
             monthlyTableBody.innerHTML = '';
             days.forEach(day => {
                 const row = document.createElement('tr');
-                row.className = 'border-b border-gray-700 hover:bg-gray-800/50';
+                row.className = 'border-b border-[var(--border-color)] hover:bg-[var(--bg-secondary)]';
                 row.innerHTML = `<td class="px-4 py-3 font-medium">${day.date.readable}</td><td class="px-2 py-3">${formatTime(day.timings.Fajr)}</td><td class="px-2 py-3">${formatTime(day.timings.Dhuhr)}</td><td class="px-2 py-3">${formatTime(day.timings.Asr)}</td><td class="px-2 py-3">${formatTime(day.timings.Maghrib)}</td><td class="px-2 py-3">${formatTime(day.timings.Isha)}</td>`;
                 monthlyTableBody.appendChild(row);
             });
         }
 
-        // --- 4. Core Logic ---
         function startCountdown(timings) {
             if (countdownInterval) clearInterval(countdownInterval);
             const prayerTimes = getPrayerDateObjects(timings);
@@ -368,9 +497,11 @@
                 if (!nextPrayer && prayerTimes.length > 0) {
                     const tomorrowFajrTime = new Date(prayerTimes[0].time);
                     tomorrowFajrTime.setDate(tomorrowFajrTime.getDate() + 1);
-                    nextPrayer = { name: 'Fajr', time: tomorrowFajrTime };
+                    nextPrayer = { name: ramadanMode ? 'Suhoor' : 'Fajr', time: tomorrowFajrTime };
                 }
                 updateCountdownDisplay(nextPrayer, now);
+                const currentMethodSelect = document.getElementById('method-select');
+                document.getElementById('current-method-display').textContent = currentMethodSelect.options[currentMethodSelect.selectedIndex].text;
             };
             countdownInterval = setInterval(update, 1000);
             update();
@@ -378,18 +509,40 @@
 
         function getPrayerDateObjects(timings) {
             const todayStr = new Date().toDateString();
-            const prayerOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-            return prayerOrder.filter(name => timings[name]).map(name => ({ name: name, time: new Date(`${todayStr} ${timings[name]}`) }));
+            let prayerOrder = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+             if(ramadanMode) {
+                timings['Suhoor'] = timings['Imsak'];
+                timings['Iftar'] = timings['Maghrib'];
+                prayerOrder = ['Suhoor', 'Fajr', 'Dhuhr', 'Asr', 'Iftar', 'Isha'];
+            }
+            return prayerOrder.filter(name => timings[name] || timings[name === 'Suhoor' ? 'Imsak' : name] || timings[name === 'Iftar' ? 'Maghrib' : name]).map(name => {
+                const originalName = name === 'Suhoor' ? 'Imsak' : (name === 'Iftar' ? 'Maghrib' : name);
+                return { name: name, time: new Date(`${todayStr} ${timings[originalName]}`) };
+            });
         }
         
         function updateCountdownDisplay(nextPrayer, now) {
             const nextPrayerNameEl = document.getElementById('next-prayer-name');
             const countdownEl = document.getElementById('countdown');
+            const nextPrayerLabel = document.getElementById('next-prayer-label');
+
+            document.querySelectorAll('.prayer-row').forEach(row => row.classList.remove('active-prayer'));
+
             if (!nextPrayer) {
                 nextPrayerNameEl.textContent = 'Done';
                 countdownEl.textContent = '--:--:--';
                 return;
             }
+
+            const activePrayerRow = document.querySelector(`.prayer-row[data-prayer-name="${nextPrayer.name}"]`);
+            if(activePrayerRow) activePrayerRow.classList.add('active-prayer');
+
+            if(ramadanMode && (nextPrayer.name === 'Iftar' || nextPrayer.name === 'Suhoor')) {
+                 nextPrayerLabel.textContent = `Time until ${nextPrayer.name}`;
+            } else {
+                 nextPrayerLabel.textContent = `Time until`;
+            }
+
             const timeDiff = nextPrayer.time - now;
             if (timeDiff <= 0) { clearInterval(countdownInterval); fetchDailyData(); return; }
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
@@ -397,11 +550,8 @@
             const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
             nextPrayerNameEl.textContent = nextPrayer.name;
             countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            document.querySelectorAll('#prayer-times-list > div').forEach(div => {
-                const prayerNameEl = div.querySelector('span:first-child');
-                if (prayerNameEl && prayerNameEl.textContent === nextPrayer.name) { div.classList.add('bg-emerald-800', 'border-emerald-500'); } 
-                else { div.classList.remove('bg-emerald-800', 'border-emerald-500'); }
-            });
+            
+            countdownEl.classList.toggle('pulsate', timeDiff < 60000);
         }
         
         function handleNotificationClick(prayerName, prayerTime) {
@@ -421,7 +571,7 @@
             const timeDiff = prayerTime.getTime() - now.getTime();
             if (timeDiff > 0) {
                 setTimeout(() => {
-                    new Notification('Prayer Time!', { body: `It's time for ${prayerName} prayer.`, icon: 'image_95c516.jpg' });
+                    new Notification('Prayer Time!', { body: `It's time for ${prayerName} prayer.`});
                     document.getElementById('adhan-audio').play().catch(e => console.error("Error playing adhan:", e));
                     delete scheduledNotifications[prayerName];
                     document.querySelector(`#bell-${prayerName}`).classList.remove('active');
@@ -464,7 +614,7 @@
             if (suggestions.length === 0) { suggestionsBox.classList.add('hidden'); return; }
             suggestions.forEach(place => {
                 const suggestionItem = document.createElement('div');
-                suggestionItem.className = 'p-2 hover:bg-gray-700 cursor-pointer text-sm';
+                suggestionItem.className = 'p-2 hover:bg-[var(--bg-secondary)] cursor-pointer text-sm';
                 suggestionItem.textContent = place.display_name;
                 suggestionItem.onclick = () => {
                     document.getElementById('location-input').value = place.display_name;
@@ -505,17 +655,14 @@
             mainContent.classList.remove('hidden');
         }
         
-        // --- 5. Qibla Direction Logic ---
         function calculateQiblaDirection(lat, lon) {
             const kaabaLat = 21.4225 * Math.PI / 180;
             const userLat = lat * Math.PI / 180;
             const lonDiff = (39.8262 - lon) * Math.PI / 180;
-            
             const y = Math.sin(lonDiff) * Math.cos(kaabaLat);
             const x = Math.cos(userLat) * Math.sin(kaabaLat) - Math.sin(userLat) * Math.cos(kaabaLat) * Math.cos(lonDiff);
-            
             let bearing = Math.atan2(y, x) * 180 / Math.PI;
-            bearing = (bearing + 360) % 360; // Normalize to 0-360
+            bearing = (bearing + 360) % 360;
             return bearing;
         }
 
@@ -523,14 +670,12 @@
             const compassRose = document.getElementById('compass-rose');
             const qiblaNeedle = document.getElementById('qibla-needle');
             const qiblaDirection = parseFloat(document.getElementById('qibla-direction-degrees').textContent);
-            
-            let heading = event.webkitCompassHeading || event.alpha; // webkit for iOS
+            let heading = event.webkitCompassHeading || event.alpha;
             if (heading === null) {
                 document.getElementById('qibla-error').textContent = 'Compass heading not available.';
                 document.getElementById('qibla-error').classList.remove('hidden');
                 return;
             }
-
             compassRose.style.transform = `rotate(${-heading}deg)`;
             qiblaNeedle.style.transform = `rotate(${qiblaDirection}deg)`;
         }
@@ -538,7 +683,6 @@
         function startQiblaCompass() {
             const qiblaError = document.getElementById('qibla-error');
             qiblaError.classList.add('hidden');
-            
             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
                 DeviceOrientationEvent.requestPermission()
                     .then(permissionState => {
@@ -549,8 +693,7 @@
                             qiblaError.textContent = 'Permission to access device orientation was denied.';
                             qiblaError.classList.remove('hidden');
                         }
-                    })
-                    .catch(console.error);
+                    }).catch(console.error);
             } else if ('DeviceOrientationEvent' in window) {
                 window.addEventListener('deviceorientation', handleDeviceOrientation);
                 showQiblaCompass();
@@ -571,67 +714,6 @@
             document.getElementById('qibla-permission-prompt').classList.add('hidden');
             document.getElementById('qibla-compass-container').classList.remove('hidden');
         }
-
-        // --- Event Listeners ---
-        document.getElementById('allow-location-btn').addEventListener('click', requestLocationPermission);
-        document.getElementById('deny-location-btn').addEventListener('click', () => {
-            locationConsentModal.classList.add('hidden');
-            showError("Location access is required for automatic prayer times. Please search for a location manually.");
-            handleNewCoordinates(21.4225, 39.8262); // Fallback
-        });
-        document.getElementById('privacy-policy-btn').addEventListener('click', () => privacyPolicyModal.classList.remove('hidden'));
-        document.getElementById('close-privacy-btn').addEventListener('click', () => privacyPolicyModal.classList.add('hidden'));
-        document.getElementById('start-qibla-btn').addEventListener('click', startQiblaCompass);
-
-        mainNavButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                switchView(button.dataset.target);
-            });
-        });
-
-        document.getElementById('daily-view-btn').addEventListener('click', () => {
-            document.getElementById('daily-view').classList.remove('hidden');
-            document.getElementById('monthly-view').classList.add('hidden');
-            document.getElementById('daily-view-btn').classList.add('active');
-            document.getElementById('monthly-view-btn').classList.remove('active');
-            if(currentLatitude) fetchDailyData();
-        });
-
-        document.getElementById('monthly-view-btn').addEventListener('click', () => {
-            document.getElementById('daily-view').classList.add('hidden');
-            document.getElementById('monthly-view').classList.remove('hidden');
-            document.getElementById('daily-view-btn').classList.remove('active');
-            document.getElementById('monthly-view-btn').classList.add('active');
-            if (currentLatitude && document.getElementById('monthly-table-body').innerHTML === '') {
-                fetchMonthlyData();
-            }
-        });
-
-        document.getElementById('method-select').addEventListener('change', (e) => {
-            currentMethod = e.target.value;
-            if(currentLatitude) handleNewCoordinates(currentLatitude, currentLongitude);
-        });
-        
-        document.getElementById('location-input').addEventListener('input', () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                fetchLocationSuggestions(document.getElementById('location-input').value);
-            }, 300);
-        });
-
-        document.getElementById('location-input').addEventListener('keyup', (e) => { if (e.key === 'Enter') searchLocation(); });
-        
-        document.addEventListener('click', (e) => {
-            const locationInput = document.getElementById('location-input');
-            const suggestionsBox = document.getElementById('suggestions-box');
-            if (!locationInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-                suggestionsBox.classList.add('hidden');
-            }
-        });
-
-        // --- Initial Load ---
-        window.onload = showLocationConsent;
-
     </script>
 </body>
 </html>
